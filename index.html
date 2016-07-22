@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Totally Trivial Trivia</title>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="assets/css/reset.css">
+	<link rel="stylesheet" type="text/css" href="assets/css/style.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+	
+</head>
+<body>
+
+	<h1>Totally Trivial Trivia!</h1>
+
+	<img src="assets/images/StartButton.png" id="button">
+
+	<h2 id="timerDisplay"></h2>
+
+	<br>
+
+	<h3 id="questionString"></h3>
+
+	<br>
+	<h4 id="answer1"></h4>
+	<h4 id="answer2"></h4>
+	<h4 id="answer3"></h4>
+	<h4 id="answer4"></h4>
+
+	<br><br>
+
+	<h1 id="startOver"></h1>
+
+
+
+
+	<script>
+
+
+	function timer() {
+
+		
+		if (timerVal > 0)
+			document.getElementById("timerDisplay").innerHTML = Math.floor(timerVal);
+
+
+		if (timerVal > 0 && isCorrect == true){
+			var timerPause = timerVal;
+			document.getElementById("timerDisplay").innerHTML = Math.floor(timerPause);
+			timerVal = -1;
+			isCorrect = null;
+			numCorrect++;
+
+			display("Correct!"," "," "," "," ");
+
+		}
+
+		if (timerVal > 0 && isCorrect == false){
+			var timerPause = timerVal;
+			document.getElementById("timerDisplay").innerHTML = Math.floor(timerPause);
+			timerVal = -1;
+			isCorrect = null;
+			numIncorrect++;
+
+			var someString = "The Correct Answer was: ";
+			var correctAnswer = someString.concat(currentCorrectString);
+
+			display("Nope!", correctAnswer, " ", " ", " ");
+
+		}
+
+		if (timerVal == 0){			
+			document.getElementById("timerDisplay").innerHTML = 0;
+
+			numUnanswered++;
+
+			var someString = "The Correct Answer was: ";
+			var correctAnswer = someString.concat(currentCorrectString);
+
+			display("Out of Time!", correctAnswer, " ", " ", " ");
+		}
+
+
+		//Delay
+		if (timerVal == -5){
+			if(counter > triviaData.length-1){
+				stopTimer();
+				display("All done, here's how you did!",
+					"Correct Answers: " + numCorrect,
+					"Incorrect Answers: " + numIncorrect,
+					"Unanswered: " + numUnanswered, 
+					" ");
+				$("#startOver").show();
+				document.getElementById("startOver").innerHTML = "Start Over?";
+			}
+			else{
+				getNextQuestion();
+				timerVal = 15;
+			}
+		}
+
+		timerVal-= .25;
+
+		
+	}
+	function stopTimer() {
+		clearInterval(myVar);
+	}
+
+
+	function getNextQuestion() {
+		display(
+			triviaData[counter], 
+			triviaData[counter+1], 
+			triviaData[counter+2], 
+			triviaData[counter+3], 
+			triviaData[counter+4]);
+
+		currentCorrectVal = key[counter/5]
+		currentCorrectString = triviaData[counter+currentCorrectVal];
+
+		counter += 5;
+	}
+
+
+	function display(question, answer1,answer2,answer3,answer4) {
+		document.getElementById("questionString").innerHTML = question;
+
+		document.getElementById("answer1").innerHTML = answer1;
+		document.getElementById("answer2").innerHTML = answer2;
+		document.getElementById("answer3").innerHTML = answer3;
+		document.getElementById("answer4").innerHTML = answer4;
+	}
+
+
+	function testWin(userAnswer) {
+		if(currentCorrectVal == userAnswer){
+			isCorrect = 1;
+		}
+		else
+			isCorrect = 0;
+	}
+
+	function start() {
+		myVar = setInterval(function(){ timer() }, 250);
+	}
+
+
+
+
+
+	var triviaData = 
+		["What was the first full length CGI movie?",
+			"A Bug's Life", "Monster's Inc", "Toy Story", "The Lion King",
+		"Which of these is NOT a name of one of the Spice Girls?",
+			"Sporty Spice", "Fred Spice", "Scary Spice", "Posh Spice",
+		"Are Java and Javascript the same thing?",
+			"Yes", "No", "Maybe", "idk"];
+
+	// 1 thru 4
+	var key =[3,2,2];
+
+	var myVar;
+	var timerVal = 15;
+	var counter = 0;
+	var numCorrect = 0;
+	var numIncorrect = 0;
+	var numUnanswered = 0;
+
+	var currentCorrectVal;
+	var currentCorrectString;
+	var isCorrect = -1;
+	
+
+		
+	$("#answer1").click(function(){	
+		testWin(1);
+	});
+
+	$("#answer2").click(function(){
+		testWin(2);
+	});
+
+	$("#answer3").click(function(){
+		testWin(3);
+	});
+
+	$("#answer4").click(function(){
+		testWin(4);
+	});
+
+	$("#button").click(function(){
+		getNextQuestion();
+		start();
+		$("#button").hide();
+	});
+
+	$("#startOver").click(function(){
+		timerVal = 15;
+		counter = numCorrect = numIncorrect = numUnanswered = 0;
+		isCorrect = -1; 
+		getNextQuestion();
+		start();
+		$("#startOver").hide();
+	});
+
+
+	</script>
+
+</body>
+	
+</html>
